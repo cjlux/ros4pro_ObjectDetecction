@@ -1,2 +1,2 @@
-# ros4pro_ObjectDetection
+# tod_tools
 Python scripts useful for Tensorflow Object Detection
