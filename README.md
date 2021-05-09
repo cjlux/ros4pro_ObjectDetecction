@@ -1,2 +1,2 @@
-# tod_tf2
-Python scripts useful for Tensorflow Object Detection
+# tod_tf2_tools
+Python scripts & tools useful for working with the `Tensorflow Object Detection` API.
