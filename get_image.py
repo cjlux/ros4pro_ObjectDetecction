@@ -11,6 +11,7 @@ bridge    = CvBridge()
 image     = bridge.imgmsg_to_cv2(response.image)
 plt.figure()
 plt.imshow(image)
+plt.axis('off')
 plt.show()
 cv2.imwrite("image.png", image)
 
