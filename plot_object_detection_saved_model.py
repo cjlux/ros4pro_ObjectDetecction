@@ -36,7 +36,7 @@ import matplotlib
 from PIL import Image
 
 from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as vis_util
+from object_detection.utils import visualization_utils as vis_utils
 matplotlib.use('TkAgg')
 
 parser = argparse.ArgumentParser(description="Uses a trained network to detect object in images")
@@ -67,8 +67,6 @@ NCLASSES  = args.nclasses
 # ~~~~~~~~~~~~~~
 # Next we load the downloaded model
 import time
-from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as viz_utils
 
 print('Loading model...', end='')
 start_time = time.time()
