@@ -55,7 +55,7 @@ def main(project):
         xml_df = xml_to_csv(image_path)
         csv_path = os.path.join(project, 'images', folder +'_labels.csv')
         xml_df.to_csv(csv_path, index=None)
-        print('Successfully converted xml data in file <{}>.'.format(csv_path))
+        print(f'Successfully converted xml data in file <{csv_path}>')
 
 
 if __name__ == "__main__":
