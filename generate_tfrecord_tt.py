@@ -5,25 +5,26 @@ the version difference between the orignal script xxxx.py and the version xxxxx_
 is that the '_tt' version processes automatically the train and test data assuming
 the tree :
 
-./images/
-     |---<project_name>/
-              |----train/
-              |      |-----*.jpg
-              |      |-----*.xml
-              |----test/
-              |      |-----*.jpg
-              |      |-----*.xml
-              |----train_labels.csv
-              |----test_labels.csv
-./training/
-     |---<project_name>/
-     |        |---<pre_trained_network>/
-     |        |              |
-     |        |----train.record
-     |        |----test.record
+<project>
+     |---images/
+     |     |----train/
+     |     |      |-----*.jpg
+     |     |      |-----*.xml
+     |     |----test/
+     |     |      |-----*.jpg
+     |     |      |-----*.xml
+     |     |----train_labels.csv
+     |     |----test_labels.cs
+     |
+     |---training/
+     |     |---<pre-trained_net>/
+     |     |           |
+     |     |           
+     |     |----train.record
+     |     |----test.record
      |
 
-The directory <project_name> is given by the option --project.
+The directory <project> is given by the option --project.
 
 ### Adapated from teh work of Gilbert Tanner :
 ### https://github.com/TannerGilbert/Tensorflow-Object-Detection-API-Train-Model
@@ -45,16 +46,12 @@ if sys.version < '3.5':
     sys.exit()
 
 def check_tree(project):    
-
     ret = True
-    for path in ('./images', './training'):
-        if not os.path.isdir(path):
-            print('missing directory {}'.format(path))
+    for path in ('images', 'training'):
+        target = os.path.join(project, path)
+        if not os.path.isdir(target):
+            print(f'missing directory {target}')
             ret = False
-        else:
-            if not os.path.isdir(os.path.join(path, project)):
-                print('missing subdir {} under directory {}'.format(project, path))
-                ret = False
     return ret
 
 def split(df, group):
@@ -111,28 +108,28 @@ def main(_):
     project = args.project
     if not check_tree(project): sys.exit()
 
+    out_dir = os.path.join(project, 'training')
+    img_dir = os.path.join(project, 'images')
+
     for folder in ('train', 'test'):
-        prj_dir = os.path.join('./images' , project)
-        img_dir = os.path.join('./images' , project, folder)
-        out_dir = os.path.join('./training', project)
-
-        csv_file = os.path.join(prj_dir, folder+'_labels.csv')
+        csv_file = os.path.join(img_dir, folder+'_labels.csv')
         out_file = os.path.join(out_dir, folder+'.record')
-
+        img_folder_dir = os.path.join(img_dir, folder)
+        
         with tf.python_io.TFRecordWriter(out_file) as writer:
             examples = pd.read_csv(csv_file)
             grouped = split(examples, 'filename')
             for group in grouped:
-                tf_example = create_tf_example(group, img_dir)
+                tf_example = create_tf_example(group, img_folder_dir)
                 writer.write(tf_example.SerializeToString())
 
-        print('Successfully created the TFRecord file: {}'.format(out_file))
+        print(f'Successfully created the TFRecord file: <{out_file}>')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Convert CSV data to tfrecord format")
     parser.add_argument('-p', '--project', type=str, required=True,
-                        help='name of the sub-directory under training/ and images/ directories')
+                        help='name of project directory that contains the images/ and training/ subdirectories')
     args = parser.parse_args()
 
     tf.app.run()

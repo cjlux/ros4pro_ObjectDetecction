@@ -7,18 +7,18 @@ the main difference between the orignal script xxxx.py and xxxxx_tt.py
 is that the '_tt' version processes automatically the train and test
 folders assuming the tree :
 
-images/
-   |---<project_name>/
-            |----train/
-            |      |-----*.jpg
-            |      |-----*.xml
-            |----test/
-            |      |-----*.jpg
-            |      |-----*.xml
-            |----train_labels.csv
-            |----test_labels.csv
+<project>/
+   |---images/
+         |----train/
+         |      |-----*.jpg
+         |      |-----*.xml
+         |----test/
+         |      |-----*.jpg
+         |      |-----*.xml
+         |----train_labels.csv
+         |----test_labels.csv
 
-The directory <project_name> is given by the option --project.
+The directory <project> is given by the option --project.
 
 JLC v1.0 2020/07/11 initial revision of the '_tt' version.
 
@@ -51,15 +51,15 @@ def xml_to_csv(path):
 
 def main(project):
     for folder in ['train', 'test']:
-        image_path = os.path.join(os.getcwd(), 'images' , project, folder)
+        image_path = os.path.join(os.getcwd(), project, 'images', folder)
         xml_df = xml_to_csv(image_path)
-        csv_path = os.path.join('images', project, folder +'_labels.csv')
+        csv_path = os.path.join(project, 'images', folder +'_labels.csv')
         xml_df.to_csv(csv_path, index=None)
-        print('Successfully converted xml data in file <{}>.'.format(csv_path))
+        print(f'Successfully converted xml data in file <{csv_path}>')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert XML to CSV")
-    parser.add_argument('-p', '--project', type=str, required=True, help='name of the sub-directory under images/')
+    parser.add_argument('-p', '--project', type=str, required=True, help='name of the project directory containing the images/ subdir')
     args = parser.parse_args()
     main(args.project)
