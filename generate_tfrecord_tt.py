@@ -123,7 +123,7 @@ def main(_):
                 tf_example = create_tf_example(group, img_folder_dir)
                 writer.write(tf_example.SerializeToString())
 
-        print(f'Successfully created the TFRecord file: {out_file}')
+        print(f'Successfully created the TFRecord file: <{out_file}>')
 
 
 if __name__ == '__main__':
