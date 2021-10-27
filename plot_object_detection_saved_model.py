@@ -46,8 +46,8 @@ parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
                     help='path to the "saved_model" directory.')
 parser.add_argument('-i', '--images', type=str, required=True,
                     help='path of the image to process.>')
-parser.add_argument('-n', '--nclasses', type=int, required=False, default=0,
-                    help='number of classes to detect.')
+parser.add_argument('-n', '--nb_max_object', type=int, required=True,
+                    help='number max of object to detect.')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=50,
                     help='Detection theshold (percent) to display bounding boxe.')
 args = parser.parse_args()
@@ -58,22 +58,19 @@ PROJECT = args.project
 if os.path.isfile(args.images):
     IMAGE_PATHS = [args.images]
 elif os.path.isdir(args.images):
-    IMAGE_PATHS = [os.path.join(args.images, f) for f in os.listdir(args.images) if f.lower().endswith("png")]
+    IMAGE_PATHS = [os.path.join(args.images, f) for f in os.listdir(args.images) if f.lower().endswith("png") or f.lower().endswith("jpg")]
 
-THRESHOLD = args.threshold/100
-NCLASSES  = args.nclasses
+THRESHOLD  = args.threshold/100
+NB_MAX_OBJ = args.nb_max_object
 
 # Load the model
 # ~~~~~~~~~~~~~~
 # Next we load the downloaded model
 import time
-
 print('Loading model...', end='')
 start_time = time.time()
-
 # Load saved model and build the detection function
 detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
-
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f'Done! Took {elapsed_time:.2f} seconds')
@@ -119,7 +116,6 @@ def load_image_into_numpy_array(path):
     return np.array(Image.open(path))
 
 
-
 for image_path in IMAGE_PATHS:
 
     print('Running inference for {}... '.format(image_path), end='')
@@ -140,6 +136,7 @@ for image_path in IMAGE_PATHS:
     # Convert to numpy arrays, and take index [0] to remove the batch dimension.
     # We're only interested in the first num_detections.
     num_detections = int(detections.pop('num_detections'))
+    if num_detections > NB_MAX_OBJ: num_detections = NB_MAX_OBJ 
     detections = {key: value[0, :num_detections].numpy()
                    for key, value in detections.items()}
     detections['num_detections'] = num_detections
@@ -149,16 +146,17 @@ for image_path in IMAGE_PATHS:
 
     print(detections['detection_classes'])
     print(detections['detection_scores'])
+    print(detections['detection_boxes'])
 
     image_np_with_detections = image_np.copy()
 
-    viz_utils.visualize_boxes_and_labels_on_image_array(
+    vis_utils.visualize_boxes_and_labels_on_image_array(
           image_np_with_detections,
           detections['detection_boxes'],
           detections['detection_classes'],
           detections['detection_scores'],
           category_index,
-          line_thickness=4,
+          line_thickness=3,
           use_normalized_coordinates=True,
           max_boxes_to_draw=4,
           min_score_thresh=THRESHOLD,
