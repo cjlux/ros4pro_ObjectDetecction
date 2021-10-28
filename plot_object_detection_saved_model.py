@@ -81,7 +81,7 @@ print(f'Done! Took {elapsed_time:.2f} seconds')
 # Label maps correspond index numbers to category names, so that when our convolution network
 # predicts `5`, we know that this corresponds to `airplane`.  
 
-PATH_TO_LABELS = os.path.join('./training', PROJECT, 'label_map.pbtxt')
+PATH_TO_LABELS = os.path.join(PROJECT, './training', 'label_map.pbtxt')
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS,
                                                                     use_display_name=True)
 
