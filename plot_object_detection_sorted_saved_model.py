@@ -81,7 +81,7 @@ print(f'Done! Took {elapsed_time:.2f} seconds')
 # Label maps correspond index numbers to category names, so that when our convolution network
 # predicts `5`, we know that this corresponds to `airplane`.  
 
-PATH_TO_LABELS = os.path.join('./training', PROJECT, 'label_map.pbtxt')
+PATH_TO_LABELS = os.path.join(PROJECT, 'training' , 'label_map.pbtxt')
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS,
                                                                     use_display_name=True)
 
@@ -144,12 +144,20 @@ for image_path in IMAGE_PATHS:
     # detection_classes should be ints.
     detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-    x_list = detections['detection_boxes'][:,1]
-    indexes = np.argsort(x_list)
+    #
+    # Re-arrange les lists to get cubes faces from left to right:
+    #
+    x_list = detections['detection_boxes'][:,1]  # get the x abscissa
+    indexes = np.argsort(x_list)  # get the indexes for sorted abscissa
+    print("indexes for sorting:", indexes)
     list_label_sorted = detections['detection_classes'][indexes]
-    list_boxe_sorted  = detections['detection_boxes'][indexes]
     list_score_sorted = detections['detection_scores'][indexes]
+    list_boxe_sorted  = detections['detection_boxes'][indexes]
 
+    detections['detection_classes'] = list_label_sorted
+    detections['detection_scores']  = list_score_sorted
+    detections['detection_boxes']   = list_boxe_sorted
+    
     print(detections['detection_classes'])
     print(detections['detection_scores'])
     print(detections['detection_boxes'])
