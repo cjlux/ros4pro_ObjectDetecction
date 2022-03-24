@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 #
 # Import packages
@@ -51,7 +51,7 @@ detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
 print('Done!')
 
 # Load label map data: 
-PATH_TO_LABELS = os.path.join('./training', PROJECT, 'label_map.pbtxt')
+PATH_TO_LABELS = os.path.join(PROJECT, './training', 'label_map.pbtxt')
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 
 
