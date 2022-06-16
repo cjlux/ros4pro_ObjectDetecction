@@ -28,10 +28,10 @@ parser.add_argument('-p', '--project', type=str, required=True,
                     help='project name.')
 parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
                     help='path to the "saved_model" directory.')
-parser.add_argument('-n', '--nb_max_object', type=int, required=True,
-                    help='number max of object to detect.')
+parser.add_argument('-n', '--nb_max_object', type=int, required=False, default=4,
+                    help='max number of objects to detect per image.')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=80,
-                    help='Detection theshold (percent) to display bounding boxe.')
+                    help='Detection theshold (percent) to display bounding boxe around detected objets.')
 parser.add_argument('-v', '--verbose', action="count", help='wether to run in verbose mode or not')
 args = parser.parse_args()
 
@@ -51,9 +51,8 @@ detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
 print('Done!')
 
 # Load label map data: 
-PATH_TO_LABELS = os.path.join(PROJECT, './training', 'label_map.pbtxt')
+PATH_TO_LABELS = os.path.join(PROJECT, 'training', 'label_map.pbtxt')
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
-
 
 ##
 ## ROS stuff to complete...

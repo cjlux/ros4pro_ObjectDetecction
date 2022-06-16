@@ -46,7 +46,7 @@ parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
                     help='path to the "saved_model" directory.')
 parser.add_argument('-i', '--images', type=str, required=True,
                     help='path of the image to process or the directory that contains the images to process.>')
-parser.add_argument('-n', '--nb_max_object', type=int, required=True,
+parser.add_argument('-n', '--nb_max_object', type=int, required=False, default=4,
                     help='max number of objects to detect per image.')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=50,
                     help='Detection theshold (percent) to display bounding boxe around detected objets.')
