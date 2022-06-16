@@ -45,11 +45,11 @@ parser.add_argument('-p', '--project', type=str, required=True,
 parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
                     help='path to the "saved_model" directory.')
 parser.add_argument('-i', '--images', type=str, required=True,
-                    help='path of the image to process.>')
+                    help='path of the image to process or the directory that contains the images to process.>')
 parser.add_argument('-n', '--nb_max_object', type=int, required=True,
-                    help='number max of object to detect.')
+                    help='max number of objects to detect per image.')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=50,
-                    help='Detection theshold (percent) to display bounding boxe.')
+                    help='Detection theshold (percent) to display bounding boxe around detected objets.')
 args = parser.parse_args()
 
 # Name of the directory containing the object detection module we're using
@@ -59,6 +59,7 @@ if os.path.isfile(args.images):
     IMAGE_PATHS = [args.images]
 elif os.path.isdir(args.images):
     IMAGE_PATHS = [os.path.join(args.images, f) for f in os.listdir(args.images) if f.lower().endswith("png") or f.lower().endswith("jpg")]
+    IMAGE_PATHES.sort()
 
 THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
@@ -73,7 +74,7 @@ start_time = time.time()
 detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
 end_time = time.time()
 elapsed_time = end_time - start_time
-print(f'Done! Took {elapsed_time:.2f} seconds')
+print(f'Done in {elapsed_time:.2f} seconds')
 
 
 # Load label map data (for plotting)
@@ -81,7 +82,7 @@ print(f'Done! Took {elapsed_time:.2f} seconds')
 # Label maps correspond index numbers to category names, so that when our convolution network
 # predicts `5`, we know that this corresponds to `airplane`.  
 
-PATH_TO_LABELS = os.path.join(PROJECT, 'training' , 'label_map.pbtxt')
+PATH_TO_LABELS = os.path.join(PROJECT, 'training', 'label_map.pbtxt')
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS,
                                                                     use_display_name=True)
 
@@ -100,7 +101,7 @@ category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABE
 #import warnings
 #warnings.filterwarnings('ignore')   # Suppress Matplotlib warnings
 
-def load_image_into_numpy_array(path):
+def load_image_into_numpy_array(path: str):
     """Load an image from file into a numpy array.
 
     Puts image into numpy array to feed into tensorflow graph.
@@ -118,7 +119,7 @@ def load_image_into_numpy_array(path):
 
 for image_path in IMAGE_PATHS:
 
-    print('Running inference for {}... '.format(image_path), end='')
+    print(f'Running inference for image <{image_path}>... ', end='')
 
     #image_expanded = np.expand_dims(image_rgb, axis=0)
     image_np = load_image_into_numpy_array(image_path)
@@ -172,7 +173,7 @@ for image_path in IMAGE_PATHS:
           category_index,
           line_thickness=3,
           use_normalized_coordinates=True,
-          max_boxes_to_draw=4,
+          max_boxes_to_draw=num_detections,
           min_score_thresh=THRESHOLD,
           agnostic_mode=False)
     
