@@ -1,24 +1,6 @@
 #!/usr/bin/env python3
 
-#
-# Import packages
-#
-import cv2, os, rospy, sys, argparse, pathlib
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-
-from poppy_controllers.srv import GetImage
-from cv_bridge import CvBridge
-
-import tensorflow as tf
-from object_detection.utils import label_map_util
-
-#
-# do some tensorflow low level stuff...
-#
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
-tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
+import argparse, pathlib, os, sys
 
 #
 # parse command line arguments
@@ -53,6 +35,26 @@ if not os.path.exist(LABEL_MAP_PATH):
     print(f"Error: file <{LABEL_MAP_PATH}> not found")
     sys.exit()
     
+#
+# Import other packages
+#
+import cv2, os, rospy
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+
+from poppy_controllers.srv import GetImage
+from cv_bridge import CvBridge
+
+import tensorflow as tf
+from object_detection.utils import label_map_util
+
+#
+# do some tensorflow low level stuff...
+#
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
+tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
+
 # Load saved model and build the detection function
 print('Loading model...', end='')
 detect_fn = tf.saved_model.load(SAVED_MODEL_PATH)
