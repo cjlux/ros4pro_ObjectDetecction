@@ -24,12 +24,12 @@ tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
 # parse command line arguments
 #
 parser = argparse.ArgumentParser(description="Uses a trained network to detect object in images")
-parser.add_argument('-p', '--project', type=str, required=True,
-                    help='project name.')
-parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
-                    help='path to the "saved_model" directory.')
+parser.add_argument('-l', '--label_map_path', type=str, required=True,
+                    help='path of the "label_map" file')
+parser.add_argument('-s', '--saved_model_path', type=str, required=True,
+                    help='path of the "saved_model" directory')
 parser.add_argument('-n', '--nb_max_object', type=int, required=False, default=4,
-                    help='max number of objects to detect per image.')
+                    help='max number of objects to detect per image')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=80,
                     help='Detection theshold (percent) to display bounding boxe around detected objets.')
 parser.add_argument('-v', '--verbose', action="count", help='wether to run in verbose mode or not')
@@ -40,19 +40,26 @@ verbose = True if args.verbose else False
 #
 # Set useful names
 #
-PATH_TO_SAVED_MODEL = args.path_to_saved_model
-PROJECT   = args.project
+SAVED_MODEL_PATH = args.saved_model_path
+LABEL_MAP_PATH   = args.label_map_path
 THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
 
+if not exist SAVED_MODEL_PATH:
+    print(f"Error: file <{SAVED_MODEL_PATH}> not found")
+    sys.exit()
+    
+if not exist LABEL_MAP_PATH:
+    print(f"Error: file <{LABEL_MAP_PATH}> not found")
+    sys.exit()
+    
 # Load saved model and build the detection function
 print('Loading model...', end='')
-detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
+detect_fn = tf.saved_model.load(SAVED_MODEL_PATH)
 print('Done!')
 
 # Load label map data: 
-PATH_TO_LABELS = os.path.join(PROJECT, 'training', 'label_map.pbtxt')
-category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
+category_index = label_map_util.create_category_index_from_labelmap(LABEL_MAP_PATH, use_display_name=True)
 
 ##
 ## ROS stuff to complete...
