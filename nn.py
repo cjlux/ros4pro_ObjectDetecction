@@ -27,11 +27,11 @@ LABEL_MAP_PATH   = args.label_map_path
 THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
 
-if not os.path.exist(SAVED_MODEL_PATH):
+if not os.path.exists(SAVED_MODEL_PATH):
     print(f"Error: file <{SAVED_MODEL_PATH}> not found")
     sys.exit()
     
-if not os.path.exist(LABEL_MAP_PATH):
+if not os.path.exists(LABEL_MAP_PATH):
     print(f"Error: file <{LABEL_MAP_PATH}> not found")
     sys.exit()
     
