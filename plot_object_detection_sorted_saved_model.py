@@ -64,11 +64,11 @@ THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
 
 if not os.path.exists(SAVED_MODEL_PATH):
-    print(f"Error: "saved_model" directory <{SAVED_MODEL_PATH}> not found")
+    print(f"Error: 'saved_model' directory <{SAVED_MODEL_PATH}> not found")
     sys.exit()
     
 if not os.path.exists(LABEL_MAP_PATH):
-    print(f"Error: "label_map.pbtxt" file <{LABEL_MAP_PATH}> not found")
+    print(f"Error: 'label_map.pbtxt' file <{LABEL_MAP_PATH}> not found")
     sys.exit()
  
 if os.path.isfile(args.images):
