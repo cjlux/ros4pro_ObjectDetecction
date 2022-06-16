@@ -9,7 +9,7 @@ Object Detection From TF2 Saved Model
 # the `Saved Model Format <https://www.tensorflow.org/guide/saved_model>`__ to load the model.
 
 import sys, os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'    # clean tensorflow warnings:
 import pathlib
 import tensorflow as tf
 
@@ -39,30 +39,43 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_utils
 matplotlib.use('TkAgg')
 
+#
+# parse command line arguments
+#
 parser = argparse.ArgumentParser(description="Uses a trained network to detect object in images")
-parser.add_argument('-p', '--project', type=str, required=True,
-                    help='project name.')
-parser.add_argument('-s', '--path_to_saved_model', type=str, required=True,
-                    help='path to the "saved_model" directory.')
+parser.add_argument('-l', '--label_map_path', type=str, required=True,
+                    help='path of the "label_map" file')
+parser.add_argument('-s', '--saved_model_path', type=str, required=True,
+                    help='path of the "saved_model" directory')
 parser.add_argument('-i', '--images', type=str, required=True,
                     help='path of the image to process or the directory that contains the images to process.>')
 parser.add_argument('-n', '--nb_max_object', type=int, required=False, default=4,
-                    help='max number of objects to detect per image.')
-parser.add_argument('-t', '--threshold', type=int, required=False, default=50,
+                    help='max number of objects to detect per image')
+parser.add_argument('-t', '--threshold', type=int, required=False, default=80,
                     help='Detection theshold (percent) to display bounding boxe around detected objets.')
+parser.add_argument('-v', '--verbose', action="count", help='wether to run in verbose mode or not')
 args = parser.parse_args()
 
-# Name of the directory containing the object detection module we're using
-PATH_TO_SAVED_MODEL = args.path_to_saved_model
-PROJECT = args.project
+verbose = True if args.verbose else False
+
+SAVED_MODEL_PATH = args.saved_model_path
+LABEL_MAP_PATH   = args.label_map_path
+THRESHOLD  = args.threshold/100
+NB_MAX_OBJ = args.nb_max_object
+
+if not os.path.exists(SAVED_MODEL_PATH):
+    print(f"Error: "saved_model" directory <{SAVED_MODEL_PATH}> not found")
+    sys.exit()
+    
+if not os.path.exists(LABEL_MAP_PATH):
+    print(f"Error: "label_map.pbtxt" file <{LABEL_MAP_PATH}> not found")
+    sys.exit()
+ 
 if os.path.isfile(args.images):
     IMAGE_PATHS = [args.images]
 elif os.path.isdir(args.images):
     IMAGE_PATHS = [os.path.join(args.images, f) for f in os.listdir(args.images) if f.lower().endswith("png") or f.lower().endswith("jpg")]
     IMAGE_PATHS.sort()
-
-THRESHOLD  = args.threshold/100
-NB_MAX_OBJ = args.nb_max_object
 
 # Load the model
 # ~~~~~~~~~~~~~~
@@ -71,7 +84,7 @@ import time
 print('Loading model...', end='')
 start_time = time.time()
 # Load saved model and build the detection function
-detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
+detect_fn = tf.saved_model.load(SAVED_MODEL_PATH)
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f'Done in {elapsed_time:.2f} seconds')
@@ -82,9 +95,8 @@ print(f'Done in {elapsed_time:.2f} seconds')
 # Label maps correspond index numbers to category names, so that when our convolution network
 # predicts `5`, we know that this corresponds to `airplane`.  
 
-PATH_TO_LABELS = os.path.join(PROJECT, 'training', 'label_map.pbtxt')
-category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS,
-                                                                    use_display_name=True)
+# Load label map data: 
+category_index = label_map_util.create_category_index_from_labelmap(LABEL_MAP_PATH, use_display_name=True)
 
 # Putting everything together
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
