@@ -59,7 +59,7 @@ if os.path.isfile(args.images):
     IMAGE_PATHS = [args.images]
 elif os.path.isdir(args.images):
     IMAGE_PATHS = [os.path.join(args.images, f) for f in os.listdir(args.images) if f.lower().endswith("png") or f.lower().endswith("jpg")]
-    IMAGE_PATHES.sort()
+    IMAGE_PATHS.sort()
 
 THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
