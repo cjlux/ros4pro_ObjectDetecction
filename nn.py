@@ -7,9 +7,9 @@ import argparse, pathlib, os, sys
 #
 parser = argparse.ArgumentParser(description="Uses a trained network to detect object in images")
 parser.add_argument('-l', '--label_map_path', type=str, required=True,
-                    help='path of the "label_map" file')
+                    help='path of the "label_map.pbtxt" file')
 parser.add_argument('-s', '--saved_model_path', type=str, required=True,
-                    help='path of the "saved_model" directory')
+                    help='path of the "saved_model/" directory')
 parser.add_argument('-n', '--nb_max_object', type=int, required=False, default=4,
                     help='max number of objects to detect per image')
 parser.add_argument('-t', '--threshold', type=int, required=False, default=80,
