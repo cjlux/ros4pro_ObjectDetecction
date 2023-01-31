@@ -28,11 +28,11 @@ THRESHOLD  = args.threshold/100
 NB_MAX_OBJ = args.nb_max_object
 
 if not os.path.exists(SAVED_MODEL_PATH):
-    print(f"Error: "saved_model" directory <{SAVED_MODEL_PATH}> not found")
+    print(f'Error: "saved_model" directory <{SAVED_MODEL_PATH}> not found')
     sys.exit()
     
 if not os.path.exists(LABEL_MAP_PATH):
-    print(f"Error: "label_map.pbtxt" file <{LABEL_MAP_PATH}> not found")
+    print(f'Error: "label_map.pbtxt" file <{LABEL_MAP_PATH}> not found')
     sys.exit()
     
 #
@@ -131,16 +131,24 @@ if verbose:
 ## /robotReady to be True.
 ## 
 
-for label in list_label_sorted:
+count = 1
+for label, score in zip(list_label_sorted, list_score_sorted):
+   
     
-    print(f"set ROS param /label to {label}") 
-    rospy.set_param("/label", int(label))
-    
-    print("set ROS param /robotReady to False") 
-    rospy.set_param("/robotReady", False)
+    if score >= THRESHOLD:
+        print(f"object #{count}: score {score:.3f} > {THRESHOLD} is OK")
+        print(f"\tset ROS param /label to {label}") 
+        rospy.set_param("/label", int(label))
+       
+        print("\tset ROS param /robotReady to False") 
+        rospy.set_param("/robotReady", False)
 
-    robotReady = rospy.get_param("/robotReady")
-    while not robotReady:
-        rospy.sleep(1)
         robotReady = rospy.get_param("/robotReady")
+        #while not robotReady:
+        #   rospy.sleep(1)
+        #   robotReady = rospy.get_param("/robotReady")
+    else:
+        print(f"object #{count}: score {score:.3f} < {THRESHOLD} => skipping")
+
+    count += 1
 
